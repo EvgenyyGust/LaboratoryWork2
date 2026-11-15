@@ -1,10 +1,10 @@
 /*
  * File: Breakout.java
  * -------------------
- * Name:
- * Section Leader:
+ * Name: Breakout
+ * Section Leader: Yevhen, Fedir
  * 
- * This file will eventually implement the game of Breakout.
+ * This file implements the game of Breakout.
  */
 
 import acm.graphics.*;
@@ -23,7 +23,7 @@ import java.awt.event.*;
 //3. Створення м’яча та його рух (ст. 3) //done
 //4. Перевірка колізій (private GObject getCollidingObject()) (ст. 4) //done
 //5. Придумати, що робити, коли трапляється колізія (ст. 5) //done
-//6. Додати звуки (ст. 6)
+//6. Додати звуки (ст. 6) (можна використати "bounce.au" в bin)
 //7. Додати рахунок очок (ст. 6)
 //8. Додати “kicker” (Якщо гра стає нудною, можна підняти її швидкість)  (ст. 6)
 //9. Прикрасити гру (все, що тут написано не є обов'язковим):
@@ -38,9 +38,26 @@ import java.awt.event.*;
 //   3)збільшувати швидкість після кожної колізії з цеглинкою (та додати максимальну швидкість)
 //   4)додати рахунок життя
 //   5)різні рівні складності (можна, наприклад збільшити початкову та максимальну швидкість та зменжити кількість життів)
-//   6)додати паузу (клавішу чи кнопку яка зупиняє гру, а потім продовжує її)
+//   6)додати паузу (клавішу чи кнопку яка зупиняє гру, а потім продовжує її) //done, pause is "space"
 //   7)зробити декілька рівнів (можна зробити разом із ідеєю 5)
+//
+//11. Можна придумати іншу назву для цієї гри (замість "Breakout", наприклад "BrickBreaker")
 
+//якщо треба допомога, пиши Єременку Євгену
+//зробив коментарі англійською мовою, сподіваюсь це не проблема
+
+//TODO №2:
+//remove the ability to pause on hardest difficulty (keyPressed method)
+//ask the user which difficulty (or level) they want (run)
+//ask if user wants to try again (or pick a level) (run)
+//write a victory message (gameOver)
+//add different amount of lives depending on difficulty or level (setLives)
+//change starting speed depending on the difficulty (initializeBallSpeed)
+
+/**
+ * @author Yeremenko Yevhen Yevhenovych, (WRITE YOUR NAME INSTEAD OF THEESE PARENTHESES FEDIR!!!!)
+ * 
+ */
 public class Breakout extends GraphicsProgram {
 
 /** Width and height of application window in pixels */
@@ -81,7 +98,8 @@ public class Breakout extends GraphicsProgram {
  * (distance from the top of application to top brick row)*/
 	private static final int BRICK_Y_OFFSET = 70;
 
-/** Number of turns */
+/** Number of turns 
+ *  (amount of lives by default)*/
 	private static final int NTURNS = 3;
 
 /** Constants that are not a part of the lab work */
@@ -92,17 +110,20 @@ public class Breakout extends GraphicsProgram {
 	private static final double PADDLE_Y = HEIGHT - PADDLE_Y_OFFSET - PADDLE_HEIGHT; //for placePaddle and mouseMoved methods
 	private static final int BALL_Y_OFFSET = 100; //for placeBall method
 	private static final int BALL_DIAMETER = BALL_RADIUS * 2;
-	
+	private static final int BRICK_AMOUNT = NBRICK_ROWS * NBRICKS_PER_ROW;
 	
 /* Method: run() */
 /** Runs the Breakout program. */
 	public void run() {
 		this.setSize(APPLICATION_WIDTH, APPLICATION_HEIGHT);
 		addMouseListeners();
+		addKeyListeners();
+		//maybe ask the user which difficulty (or level) they want
+		
 		setupGame();
 		runGame();
+		//ask if user wants to try again (or pick a level)
 		
-		/* You fill this in, along with any subsidiary methods */
 		
 	}
 	
@@ -110,6 +131,7 @@ public class Breakout extends GraphicsProgram {
 	 * initializes everything that is needed for the game
 	 */
 	private void setupGame(){
+		setLives();
 		placeBricks();
 		placePaddle();
 		placeBall();
@@ -120,10 +142,43 @@ public class Breakout extends GraphicsProgram {
 	 * runs all methods that are responsible for the game until gameOver is true
 	 */
 	private void runGame(){
-		while(!gameOver){
-			moveBall();
+		gameState = 2;
+		while(!gameOver()){
+			if(!pause){
+				moveBall();
+				checkBall();
+			}
 			pause(DELAY);
 		}
+	}
+	
+	/**
+	 * for gameState == 2, checks if there are no bricks and if user no lives
+	 * @return either true or false
+	 */
+	private boolean gameOver(){
+		if(bricksLeft == 0){
+			//write a victory message here!!!!!!!
+			
+			return true;
+		}
+		if(ball == null){
+			//write a game over message here
+			
+			return true;
+		}
+		return false;
+	}
+	
+	/**
+	 * sets lives
+	 * FINISH THIS METHOD!!!!!!!!!!!
+	 */
+	private void setLives(){
+		//maybe add different amount of lives depending on difficulty or level 
+		//(easy = NTURNS, normal = NTURNS - 1, hard = NTURNS - 2, min amount of lives is 0)
+		
+		lives = NTURNS;
 	}
 	
 	/**
@@ -161,14 +216,12 @@ public class Breakout extends GraphicsProgram {
 	 * to make the middle align with mouse movement
 	 */
 	private void placePaddle(){
-//		double paddleStartingX = centerX - PADDLE_WIDTH / 2;
 		double centerPaddleForMouseX =  -PADDLE_WIDTH / 2;
 		paddle = new GRect(centerPaddleForMouseX, PADDLE_Y, PADDLE_WIDTH, PADDLE_HEIGHT);
 		paddle.setColor(Color.BLACK);
 		paddle.setFillColor(Color.BLACK);
 		paddle.setFilled(true);
 		add(paddle);
-//		paddle.move(centerX, 0);
 	}
 	
 	/**
@@ -183,7 +236,12 @@ public class Breakout extends GraphicsProgram {
 		add(ball);
 	}
 	
+	/**
+	 * makes the ball move at start
+	 */
 	private void initializeBallSpeed(){
+		//maybe change starting speed depending on the difficulty
+		
 		vx = rgen.nextDouble(1.0, 3.0); 
 		if (rgen.nextBoolean(0.5)){
 			vx = -vx;
@@ -200,6 +258,16 @@ public class Breakout extends GraphicsProgram {
 	}
 	
 	/**
+	 * check if ball exists and adds a new ball if lives != 0
+	 */
+	private void checkBall(){
+		if(ball == null && lives > 0){
+			placeBall();
+			lives--;
+		}
+	}
+	
+	/**
 	 * checks if ball collides with wall or object (using getCollidedObject),
 	 * and changes speed accordingly
 	 */
@@ -208,8 +276,15 @@ public class Breakout extends GraphicsProgram {
 		if (ball.getX() < 0 || ball.getX() + BALL_DIAMETER > WIDTH){
 			vx = -vx;
 		}
+		//checks collision with roof
 		if(ball.getY() < 0){
 			vy = -vy;
+		}
+		//checks collision with floor
+		if(ball.getY() + BALL_DIAMETER > HEIGHT){
+			remove(ball);
+			ball = null;
+			return;
 		}
 		//checks collision with objects
 		GObject collidedObject = getCollidedObject();
@@ -217,8 +292,9 @@ public class Breakout extends GraphicsProgram {
 			if(collidedObject == paddle){
 				vy = -Math.abs(vy);
 			}
-			else{
+			else{ //removes brick
 				remove(collidedObject);
+				bricksLeft--;
 				vy = -vy;
 			}
 		}
@@ -229,16 +305,20 @@ public class Breakout extends GraphicsProgram {
 	 * @return either null (if no collision) or collided object
 	 */
 	private GObject getCollidedObject(){
-		if(getElementAt(ball.getX(), ball.getY()) != null){ //upper left corner
+		//upper left corner
+		if(getElementAt(ball.getX(), ball.getY()) != null){
 			return getElementAt(ball.getX(), ball.getY());
 		}
-		else if(getElementAt(ball.getX() + BALL_DIAMETER, ball.getY()) != null){ //upper right corner
+		//upper right corner
+		else if(getElementAt(ball.getX() + BALL_DIAMETER, ball.getY()) != null){
 			return getElementAt(ball.getX() + BALL_DIAMETER, ball.getY());
 		}
-		else if(getElementAt(ball.getX(), ball.getY() + BALL_DIAMETER) != null){ //lower left corner
+		//lower left corner
+		else if(getElementAt(ball.getX(), ball.getY() + BALL_DIAMETER) != null){
 			return getElementAt(ball.getX(), ball.getY() + BALL_DIAMETER);
 		}
-		else if(getElementAt(ball.getX() + BALL_DIAMETER, ball.getY() + BALL_DIAMETER) != null){ //lower right corner
+		//lower right corner
+		else if(getElementAt(ball.getX() + BALL_DIAMETER, ball.getY() + BALL_DIAMETER) != null){
 			return getElementAt(ball.getX() + BALL_DIAMETER, ball.getY() + BALL_DIAMETER);
 		}
 		return null;
@@ -247,24 +327,50 @@ public class Breakout extends GraphicsProgram {
 	/**
 	 * for moving the paddle
 	 */
-	public void mouseMoved(MouseEvent e) {
-		if (paddle != null && e.getX() > HALF_PADDLE_WIDTH && e.getX() < WIDTH - HALF_PADDLE_WIDTH){
+	public void mouseMoved(MouseEvent e){
+		if (paddle != null && e.getX() > HALF_PADDLE_WIDTH && e.getX() < WIDTH - HALF_PADDLE_WIDTH && !pause){
 			double dx = e.getX() - last;
 			paddle.move(dx, 0);
 			last = e.getX();
 		}
 	}
 
+	/**
+	 * pauses the game when space is pressed (pause == true or pause == false)
+	 */
+	public void keyPressed(KeyEvent e) {
+		//maybe remove the ability to pause on hardest difficulty
+		
+		if(gameState == 2){
+			if(e.getKeyCode() == KeyEvent.VK_SPACE){
+				if(pause == false){
+					pause = true;
+				}
+				else if(pause == true){
+					pause = false;
+				}
+			}
+		}
+	}
 	
 	//ball speed
 	private double vx; 
 	private double vy;
 	
 	//starting ball coords
-	double ballX = CENTER_X - BALL_RADIUS;
-	double ballY = PADDLE_Y - BALL_Y_OFFSET;
+	private double ballX = CENTER_X - BALL_RADIUS;
+	private double ballY = PADDLE_Y - BALL_Y_OFFSET;
 	
-	boolean gameOver = false;
+	//0 is start screen, 1 is pick difficulty (or level), 2 is playing, 3 is game over, 4 is exit (end of the program)
+	private int gameState = 0;
+    //if true, pauses the game (runGame)
+	private boolean pause = false;
+	
+	private int lives;
+	private int bricksLeft = BRICK_AMOUNT;
+	
+	//placeholder, maybe add 3 difficulties: 1-easy, 2-normal, 3-hard
+	private int difficulty;
 	
 	//for mouseMoved method
 	private double last = 0;
