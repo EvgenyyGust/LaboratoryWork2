@@ -11,9 +11,12 @@ import acm.graphics.*;
 import acm.program.*;
 import acm.util.*;
 
+import javax.sound.sampled.*;
 import java.applet.*;
 import java.awt.*;
 import java.awt.event.*;
+
+import java.io.File;
 
 //для ідей можна використати https://share.google/auQqUWlG9Fmfc3bor (Block Breaker - Google)
 
@@ -23,9 +26,9 @@ import java.awt.event.*;
 //3. Створення м’яча та його рух (ст. 3) //done
 //4. Перевірка колізій (private GObject getCollidingObject()) (ст. 4) //done
 //5. Придумати, що робити, коли трапляється колізія (ст. 5) //done
-//6. Додати звуки (ст. 6) (можна використати "bounce.au" в bin)
-//7. Додати рахунок очок (ст. 6)
-//8. Додати “kicker” (Якщо гра стає нудною, можна підняти її швидкість)  (ст. 6)
+//6. Додати звуки (ст. 6) (можна використати "bounce.au" в bin)//done
+//7. Додати рахунок очок (ст. 6)//done
+//8. Додати “kicker” (Якщо гра стає нудною, можна підняти її швидкість)  (ст. 6)//done
 //9. Прикрасити гру (все, що тут написано не є обов'язковим):
 //	 1)додати background
 //	 2)додати більше кольорів (або замінити цеглинки на рисунки, з цим Євген може допомогти)
@@ -37,9 +40,9 @@ import java.awt.event.*;
 //   2)кирпичик, який додає додатковий м'яч іншого кольору (буде декілька м'ячів одночасно)
 //   3)збільшувати швидкість після кожної колізії з цеглинкою (та додати максимальну швидкість)
 //   4)додати рахунок життя
-//   5)різні рівні складності (можна, наприклад збільшити початкову та максимальну швидкість та зменжити кількість життів)
+//   5)різні рівні складності (можна, наприклад збільшити початкову та максимальну швидкість та зменжити кількість життів)//done
 //   6)додати паузу (клавішу чи кнопку яка зупиняє гру, а потім продовжує її) //done, pause is "space"
-//   7)зробити декілька рівнів (можна зробити разом із ідеєю 5)
+//   7)зробити декілька рівнів (можна зробити разом із ідеєю 5)// done
 //
 //11. Можна придумати іншу назву для цієї гри (замість "Breakout", наприклад "BrickBreaker")
 
@@ -48,14 +51,14 @@ import java.awt.event.*;
 
 //TODO №2:
 //remove the ability to pause on hardest difficulty (keyPressed method)
-//ask the user which difficulty (or level) they want (run)
-//ask if user wants to try again (or pick a level) (run)
-//write a victory message (gameOver)
-//add different amount of lives depending on difficulty or level (setLives)
-//change starting speed depending on the difficulty (initializeBallSpeed)
+//ask the user which difficulty (or level) they want (run) //done
+//ask if user wants to try again (or pick a level) (run) //done
+//write a victory message (gameOver)//DONE
+//add different amount of lives depending on difficulty or level (setLives)//done
+//change starting speed depending on the difficulty (initializeBallSpeed)//done
 
 /**
- * @author Yeremenko Yevhen Yevhenovych, (WRITE YOUR NAME INSTEAD OF THEESE PARENTHESES FEDIR!!!!)
+ * @author Yeremenko Yevhen Yevhenovych, Bolgar Fedir Vasylovych
  * 
  */
 public class Breakout extends GraphicsProgram {
@@ -101,41 +104,104 @@ public class Breakout extends GraphicsProgram {
 /** Number of turns 
  *  (amount of lives by default)*/
 	private static final int NTURNS = 3;
+	private int selectedLives = NTURNS - 1;
+	private int SPEED = 1;
 
 /** Constants that are not a part of the lab work */
 	private static final int DELAY = 10;
-	
 	private static final double CENTER_X = WIDTH / 2;
 	private static final double HALF_PADDLE_WIDTH =  PADDLE_WIDTH / 2; //for mouseMoved method
 	private static final double PADDLE_Y = HEIGHT - PADDLE_Y_OFFSET - PADDLE_HEIGHT; //for placePaddle and mouseMoved methods
 	private static final int BALL_Y_OFFSET = 100; //for placeBall method
 	private static final int BALL_DIAMETER = BALL_RADIUS * 2;
 	private static final int BRICK_AMOUNT = NBRICK_ROWS * NBRICKS_PER_ROW;
-	
+
+/**музика */
+	private AudioClip music;
+	private static final String SND = "sound/";
+
+/** меню */
+	//основні кнопки
+	private GRect startButton;
+	private GLabel startLabel;
+	private GRect musicButton;
+	private GLabel musicLabel;
+	private GRect levelButton;
+	private GLabel levelLabel;
+
+	private boolean musicON = true;
+
+	//кнопки вибору рівня
+	private GRect levelEasyButton;
+	private GLabel levelEasyLabel;
+	private GRect levelMediumButton;
+	private GLabel levelMediumLabel;
+	private GRect levelHardButton;
+	private GLabel levelHardLabel;
+
+/** Меню програшу */
+	private GRect restartButton;
+	private GLabel restartLabel;
+	private GLabel loseLabel;
+
+/** Меню перемоги */
+	private GLabel winLabel;
+
+/** Рахунок */
+	private GRect scoreButton;
+	private GLabel scoreLabel;
+	private int score;
+
 /* Method: run() */
 /** Runs the Breakout program. */
 	public void run() {
 		this.setSize(APPLICATION_WIDTH, APPLICATION_HEIGHT);
 		addMouseListeners();
 		addKeyListeners();
-		//maybe ask the user which difficulty (or level) they want
-		
-		setupGame();
-		runGame();
-		//ask if user wants to try again (or pick a level)
-		
-		
+		music = MediaTools.loadAudioClip("nathanielthomasbrack-8-bit-loop-189494.wav");
+
+		gameState = 0;
+		while(true) {
+			if(gameState == 0) {
+				showMenu();
+
+				while(gameState == 0) {// чекає поки кнопка запуску не буде натиснена
+					pause(DELAY);
+				}
+			}
+			setupGame();
+			runGame();
+
+			while(gameState == 3) {
+				pause(DELAY);
+			}
+		}
+
 	}
 	
 	/**
 	 * initializes everything that is needed for the game
 	 */
 	private void setupGame(){
-		setLives();
+		//Для рестарту гри потрібно збрасувати усі змінні
+		score = 0;
+		bricksLeft = BRICK_AMOUNT;
+		lives = selectedLives;
+		pause = false;
+
+
+		ball = null;
+		paddle = null;
+
+		last = 0;//без цього працює дуже криво
+
+
 		placeBricks();
 		placePaddle();
 		placeBall();
 		initializeBallSpeed();
+
+		pause(1500);
 	}
 	
 	/**
@@ -143,6 +209,7 @@ public class Breakout extends GraphicsProgram {
 	 */
 	private void runGame(){
 		gameState = 2;
+		count();
 		while(!gameOver()){
 			if(!pause){
 				moveBall();
@@ -158,29 +225,25 @@ public class Breakout extends GraphicsProgram {
 	 */
 	private boolean gameOver(){
 		if(bricksLeft == 0){
-			//write a victory message here!!!!!!!
-			
+			if(music != null){
+				music.stop();
+			}
+			gameState = 3;
+			showWin();
 			return true;
 		}
 		if(ball == null){
-			//write a game over message here
-			
+			if(music != null){
+				music.stop();
+			}
+			playSound("freesound_community-videogame-death-sound-43894.wav");
+			gameState = 3;
+			showLose();
+
 			return true;
 		}
 		return false;
 	}
-	
-	/**
-	 * sets lives
-	 * FINISH THIS METHOD!!!!!!!!!!!
-	 */
-	private void setLives(){
-		//maybe add different amount of lives depending on difficulty or level 
-		//(easy = NTURNS, normal = NTURNS - 1, hard = NTURNS - 2, min amount of lives is 0)
-		
-		lives = NTURNS;
-	}
-	
 	/**
 	 * places bricks using BrickColors.java (enum BrickColors) to choose the color of every 2 rows
 	 * uses constants BRICK_Y_OFFSET, NBRICK_ROWS, NBRICKS_PER_ROW and BRICK_HEIGHT (BRICK_WIDTH)
@@ -216,7 +279,7 @@ public class Breakout extends GraphicsProgram {
 	 * to make the middle align with mouse movement
 	 */
 	private void placePaddle(){
-		double centerPaddleForMouseX =  -PADDLE_WIDTH / 2;
+		double centerPaddleForMouseX = -PADDLE_WIDTH / 2;
 		paddle = new GRect(centerPaddleForMouseX, PADDLE_Y, PADDLE_WIDTH, PADDLE_HEIGHT);
 		paddle.setColor(Color.BLACK);
 		paddle.setFillColor(Color.BLACK);
@@ -253,7 +316,7 @@ public class Breakout extends GraphicsProgram {
 	 * moves the ball while checking for collisions (with the ball)
 	 */
 	private void moveBall(){
-		ball.move(vx, vy);
+		ball.move(vx * SPEED, vy * SPEED);
 		checkBallCollision();
 	}
 	
@@ -262,6 +325,7 @@ public class Breakout extends GraphicsProgram {
 	 */
 	private void checkBall(){
 		if(ball == null && lives > 0){
+			pause(500);
 			placeBall();
 			lives--;
 		}
@@ -292,10 +356,13 @@ public class Breakout extends GraphicsProgram {
 			if(collidedObject == paddle){
 				vy = -Math.abs(vy);
 			}
-			else{ //removes brick
+			else{//removes brick
+				Color color = collidedObject.getColor();
 				remove(collidedObject);
+				playSound("freesound_community-gameboy-pluck-41265.wav");
 				bricksLeft--;
 				vy = -vy;
+				addScore(color);
 			}
 		}
 	}
@@ -352,6 +419,273 @@ public class Breakout extends GraphicsProgram {
 			}
 		}
 	}
+
+	private void createButton(GRect button, GLabel label, Color color){ //робить кнопки
+		button.setColor(color);
+		button.setFilled(true);
+		button.setFillColor(Color.BLACK);
+		label.setFont("Monospaced-30");
+		label.setColor(color);
+		add(button);
+		add(label);
+		centerLabel(label, button);
+	}
+
+	private void centerLabel(GLabel label, GRect button){ //центрує текст
+		double x = button.getX() + (button.getWidth() - label.getWidth()) / 2;
+		double y = button.getY() + (button.getHeight() + label.getAscent()) / 2;
+		label.setLocation(x, y);
+	}
+
+	private void updateSettingsText(){//змінює стан кнопок
+		if(musicON){
+			musicLabel.setLabel("MUSIC: ON");
+		}
+		else{
+			musicLabel.setLabel("MUSIC: OFF");
+		}
+		centerLabel(musicLabel, musicButton);
+	}
+
+	private void showMenu(){
+		setBackground(Color.BLACK);
+
+		GLabel title = new GLabel("BREAKOUT");
+		title.setFont("Monospaced-90");
+		title.setColor(Color.YELLOW);
+		title.setLocation((WIDTH - title.getWidth()) / 2, 150);
+		add(title);
+
+		startButton = new GRect((WIDTH - 300) / 2, 220, 300, 80);
+		startLabel = new GLabel("START GAME");
+		createButton(startButton, startLabel, Color.GREEN);
+
+		musicButton = new GRect((WIDTH - 240) / 2, 350, 240, 50);
+		musicLabel = new GLabel("MUSIC: ON");
+		createButton(musicButton, musicLabel, Color.CYAN);
+		updateSettingsText();
+
+		levelButton = new GRect((WIDTH - 240) / 2, 420, 240, 50);
+		levelLabel = new GLabel("CHOOSE LEVEL");
+		createButton(levelButton, levelLabel, Color.ORANGE);
+	}
+
+	public void mouseClicked(MouseEvent e){
+		GObject clicked = getElementAt(e.getX(), e.getY());
+		if(clicked == null){
+			return;
+		}
+		// Головне меню
+		if(gameState == 0){
+			if(clicked == startButton || clicked == startLabel){
+				startGame();
+			}
+			else if(clicked == musicButton || clicked == musicLabel){
+				toggleMusic();
+			}
+			else if(clicked == levelButton || clicked == levelLabel){
+				levelChoise();
+			}
+			else if(clicked == levelEasyButton || clicked == levelEasyLabel){
+				SPEED = 1;
+				selectedLives = NTURNS - 1;
+				removeAll();
+				showMenu();
+			}
+			else if(clicked == levelMediumButton || clicked == levelMediumLabel){
+				SPEED = 2;
+				selectedLives = NTURNS - 2;
+				removeAll();
+				showMenu();
+			}
+			else if(clicked == levelHardButton || clicked == levelHardLabel){
+				SPEED = 3;
+				selectedLives = NTURNS - 3;
+				removeAll();
+				showMenu();
+			}
+		}
+		// Меню після програшу
+		else if(gameState == 3){
+			if(clicked == restartButton || clicked == restartLabel){
+				startGame();
+			}
+			else if(clicked == musicButton || clicked == musicLabel){
+				toggleMusic();
+			}
+			else if(clicked == levelButton || clicked == levelLabel){
+				levelChoise();
+			}
+			else if(clicked == levelEasyButton || clicked == levelEasyLabel){
+				SPEED = 1;
+				selectedLives = NTURNS - 1;
+				removeAll();
+				showMenu();
+				gameState = 0;
+			}
+			else if(clicked == levelMediumButton || clicked == levelMediumLabel){
+				SPEED = 2;
+				selectedLives = NTURNS - 2;
+				removeAll();
+				showMenu();
+				gameState = 0;
+			}
+			else if(clicked == levelHardButton || clicked == levelHardLabel){
+				SPEED = 3;
+				selectedLives = NTURNS - 3;
+				removeAll();
+				showMenu();
+				gameState = 0;
+			}
+		}
+	}
+
+	private void startGame(){
+		if(gameState != 0 && gameState != 3){
+			return;
+		}
+
+		removeAll();
+		setBackground(Color.WHITE);
+		if(musicON && music != null){
+			music.loop();
+		}
+		gameState = 2;
+	}
+
+	private void toggleMusic(){
+		musicON = !musicON;
+		updateSettingsText();
+	}
+
+	private void levelChoise(){ //кнопка вибору рівня
+		removeAll();
+		levelEasyButton = new GRect((WIDTH - 300) / 2, 150, 300, 80);
+		levelEasyLabel = new GLabel("EASY");
+		createButton(levelEasyButton, levelEasyLabel, Color.GREEN);
+
+		levelMediumButton = new GRect((WIDTH - 300) / 2, 240, 300, 80);
+		levelMediumLabel = new GLabel("Medium");
+		createButton(levelMediumButton, levelMediumLabel, Color.ORANGE);
+
+		levelHardButton = new GRect((WIDTH - 300) / 2, 330, 300, 80);
+		levelHardLabel = new GLabel("HARD");
+		createButton(levelHardButton, levelHardLabel, Color.RED);
+	}
+
+	private void showLose(){
+		removeAll();
+
+		setBackground(Color.BLACK);
+
+		loseLabel = new GLabel("Defeat");
+		loseLabel.setFont("Monospaced-90");
+		loseLabel.setColor(Color.RED);
+		loseLabel.setLocation((WIDTH - loseLabel.getWidth()) / 2, 150);
+		add(loseLabel);
+
+		restartButton = new GRect((WIDTH - 300) / 2, 200, 300, 80);
+		restartLabel = new GLabel("RESTART GAME");
+		createButton(restartButton, restartLabel, Color.GREEN);
+
+		scoreButton = new GRect((WIDTH - 300) / 2, 300, 300, 80);
+		scoreLabel = new GLabel("Score:" + score);
+		createButton(scoreButton, scoreLabel, Color.WHITE);
+
+		musicButton = new GRect((WIDTH - 240) / 2, 400, 240, 50);
+		musicLabel = new GLabel("MUSIC: ON");
+		createButton(musicButton, musicLabel, Color.CYAN);
+		updateSettingsText();
+
+		levelButton = new GRect((WIDTH - 240) / 2, 470, 240, 50);
+		levelLabel = new GLabel("CHOOSE LEVEL");
+		createButton(levelButton, levelLabel, Color.ORANGE);
+	}
+
+	private void showWin(){
+		removeAll();
+
+		setBackground(Color.BLACK);
+
+		winLabel = new GLabel("Victory!");
+		winLabel.setFont("Monospaced-90");
+		winLabel.setColor(Color.GREEN);
+		winLabel.setLocation((WIDTH - loseLabel.getWidth()) / 2, 150);
+		add(winLabel);
+
+		restartButton = new GRect((WIDTH - 300) / 2, 200, 300, 80);
+		restartLabel = new GLabel("RESTART GAME");
+		createButton(restartButton, restartLabel, Color.GREEN);
+
+		scoreButton = new GRect((WIDTH - 300) / 2, 300, 300, 80);
+		scoreLabel = new GLabel("Score:" + score);
+		createButton(scoreButton, scoreLabel, Color.WHITE);
+
+		musicButton = new GRect((WIDTH - 240) / 2, 400, 240, 50);
+		musicLabel = new GLabel("MUSIC: ON");
+		createButton(musicButton, musicLabel, Color.CYAN);
+		updateSettingsText();
+
+		levelButton = new GRect((WIDTH - 240) / 2, 470, 240, 50);
+		levelLabel = new GLabel("CHOOSE LEVEL");
+		createButton(levelButton, levelLabel, Color.ORANGE);
+	}
+
+
+
+
+	private void playSound(String fileName) {
+		try {
+			File file = new File(SND + fileName);
+			Clip clip = AudioSystem.getClip();
+			clip.open(AudioSystem.getAudioInputStream(file));
+			clip.addLineListener(event -> {
+				if (event.getType() == LineEvent.Type.STOP) {
+					clip.close();
+				}
+			});
+			clip.start();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	//кількість балів
+	private void count(){
+		scoreButton = new GRect(20, 10, 200, 50);
+		scoreLabel = new GLabel("" + score);
+
+		scoreButton.setColor(Color.CYAN);
+		scoreButton.setFilled(true);
+		scoreLabel.setFont("Monospaced-20");
+		add(scoreButton);
+		add(scoreLabel);
+		centerLabel(scoreLabel, scoreButton);
+	}
+
+	private void updateScore(){
+		scoreLabel.setLabel(score + " ");
+	}
+
+	private void addScore(Color color){//перевіряє який колір у цеглини та дає бали за нього
+		if(color.equals(Color.CYAN)){
+			score += 10;
+		}
+		else if(color.equals(Color.GREEN)){
+			score += 20;
+		}
+		else if(color.equals(Color.YELLOW)){
+			score += 30;
+		}
+		else if(color.equals(Color.ORANGE)){
+			score += 40;
+		}
+		else if(color.equals(Color.RED)){
+			score += 50;
+		}
+		updateScore();
+	}
+
 	
 	//ball speed
 	private double vx; 
