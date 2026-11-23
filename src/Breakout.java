@@ -38,7 +38,7 @@ import java.io.File;
 //10. Додати ще щось (за бажанням, тут тільки ідеї):
 //   1)кирпичик, який дає додаткове життя
 //   2)кирпичик, який додає додатковий м'яч іншого кольору (буде декілька м'ячів одночасно)
-//   3)збільшувати швидкість після кожної колізії з цеглинкою (та додати максимальну швидкість)
+//   3)збільшувати швидкість після кожної колізії з цеглинкою (та додати максимальну швидкість
 //   4)додати рахунок життя
 //   5)різні рівні складності (можна, наприклад збільшити початкову та максимальну швидкість та зменжити кількість життів)//done
 //   6)додати паузу (клавішу чи кнопку яка зупиняє гру, а потім продовжує її) //done, pause is "space"
@@ -446,6 +446,7 @@ public class Breakout extends GraphicsProgram {
 		centerLabel(musicLabel, musicButton);
 	}
 
+	//робить та показує меню початку
 	private void showMenu(){
 		setBackground(Color.BLACK);
 
@@ -468,7 +469,7 @@ public class Breakout extends GraphicsProgram {
 		levelLabel = new GLabel("CHOOSE LEVEL");
 		createButton(levelButton, levelLabel, Color.ORANGE);
 	}
-
+//слідкує за мишею і кліком кнопок
 	public void mouseClicked(MouseEvent e){
 		GObject clicked = getElementAt(e.getX(), e.getY());
 		if(clicked == null){
@@ -538,7 +539,7 @@ public class Breakout extends GraphicsProgram {
 			}
 		}
 	}
-
+	//підготовлює середовище до і після меню
 	private void startGame(){
 		if(gameState != 0 && gameState != 3){
 			return;
@@ -556,7 +557,6 @@ public class Breakout extends GraphicsProgram {
 		musicON = !musicON;
 		updateSettingsText();
 	}
-
 	private void levelChoise(){ //кнопка вибору рівня
 		removeAll();
 		levelEasyButton = new GRect((WIDTH - 300) / 2, 150, 300, 80);
@@ -571,7 +571,7 @@ public class Breakout extends GraphicsProgram {
 		levelHardLabel = new GLabel("HARD");
 		createButton(levelHardButton, levelHardLabel, Color.RED);
 	}
-
+	//меню програшу
 	private void showLose(){
 		removeAll();
 
@@ -600,7 +600,7 @@ public class Breakout extends GraphicsProgram {
 		levelLabel = new GLabel("CHOOSE LEVEL");
 		createButton(levelButton, levelLabel, Color.ORANGE);
 	}
-
+	//меню перемоги
 	private void showWin(){
 		removeAll();
 
@@ -632,7 +632,7 @@ public class Breakout extends GraphicsProgram {
 
 
 
-
+	//музика при діях
 	private void playSound(String fileName) {
 		try {
 			File file = new File(SND + fileName);
@@ -662,7 +662,7 @@ public class Breakout extends GraphicsProgram {
 		centerLabel(scoreLabel, scoreButton);
 	}
 
-	private void updateScore(){
+	private void updateScore(){ //оновлює значення балів
 		scoreLabel.setLabel(score + " ");
 	}
 
