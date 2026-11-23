@@ -11,62 +11,15 @@ import acm.graphics.*;
 import acm.program.*;
 import acm.util.*;
 
-<<<<<<< Updated upstream
-=======
 import javax.sound.sampled.*;
->>>>>>> Stashed changes
 import java.applet.*;
 import java.awt.*;
 import java.awt.event.*;
 
-<<<<<<< Updated upstream
-//для ідей можна використати https://share.google/auQqUWlG9Fmfc3bor (Block Breaker - Google)
-
-//TODO:
-//1. Установка цеглин (RED, ORANGE, YELLOW, GREEN, CYAN) (ст. 2) //done
-//2. Створення ракетки (ст. 3) //done
-//3. Створення м’яча та його рух (ст. 3) //done
-//4. Перевірка колізій (private GObject getCollidingObject()) (ст. 4) //done
-//5. Придумати, що робити, коли трапляється колізія (ст. 5) //done
-//6. Додати звуки (ст. 6) (можна використати "bounce.au" в bin)
-//7. Додати рахунок очок (ст. 6)
-//8. Додати “kicker” (Якщо гра стає нудною, можна підняти її швидкість)  (ст. 6)
-//9. Прикрасити гру (все, що тут написано не є обов'язковим):
-//	 1)додати background
-//	 2)додати більше кольорів (або замінити цеглинки на рисунки, з цим Євген може допомогти)
-//   3)додати ефект, коли м'ячик відбивається від чогось
-//   4)додати рамки гри (використовуючи WIDTH та HEIGHT)
-//
-//10. Додати ще щось (за бажанням, тут тільки ідеї):
-//   1)кирпичик, який дає додаткове життя
-//   2)кирпичик, який додає додатковий м'яч іншого кольору (буде декілька м'ячів одночасно)
-//   3)збільшувати швидкість після кожної колізії з цеглинкою (та додати максимальну швидкість)
-//   4)додати рахунок життя
-//   5)різні рівні складності (можна, наприклад збільшити початкову та максимальну швидкість та зменжити кількість життів)
-//   6)додати паузу (клавішу чи кнопку яка зупиняє гру, а потім продовжує її) //done, pause is "space"
-//   7)зробити декілька рівнів (можна зробити разом із ідеєю 5)
-//
-//11. Можна придумати іншу назву для цієї гри (замість "Breakout", наприклад "BrickBreaker")
-
-//якщо треба допомога, пиши Єременку Євгену
-//зробив коментарі англійською мовою, сподіваюсь це не проблема
-
-//TODO №2:
-//remove the ability to pause on hardest difficulty (keyPressed method)
-//ask the user which difficulty (or level) they want (run)
-//ask if user wants to try again (or pick a level) (run)
-//write a victory message (gameOver)
-//add different amount of lives depending on difficulty or level (setLives)
-//change starting speed depending on the difficulty (initializeBallSpeed)
-
-/**
- * @author Yeremenko Yevhen Yevhenovych, (WRITE YOUR NAME INSTEAD OF THEESE PARENTHESES FEDIR!!!!)
-=======
 import java.io.File;
 
 /**
  * @author Yeremenko Yevhen Yevhenovych, Bolgar Fedir Vasylovych
->>>>>>> Stashed changes
  * 
  */
 public class Breakout extends GraphicsProgram {
@@ -112,27 +65,17 @@ public class Breakout extends GraphicsProgram {
 /** Number of turns 
  *  (amount of lives by default)*/
 	private static final int NTURNS = 3;
-<<<<<<< Updated upstream
-
-/** Constants that are not a part of the lab work */
-	private static final int DELAY = 10;
-	
-=======
 	private int selectedLives = NTURNS - 1;
 	private int speed = 1;
 
 /** Constants that are not a part of the lab work */
 	private static final int DELAY = 10;
->>>>>>> Stashed changes
 	private static final double CENTER_X = WIDTH / 2;
 	private static final double HALF_PADDLE_WIDTH =  PADDLE_WIDTH / 2; //for mouseMoved method
 	private static final double PADDLE_Y = HEIGHT - PADDLE_Y_OFFSET - PADDLE_HEIGHT; //for placePaddle and mouseMoved methods
 	private static final int BALL_Y_OFFSET = 100; //for placeBall method
 	private static final int BALL_DIAMETER = BALL_RADIUS * 2;
 	private static final int BRICK_AMOUNT = NBRICK_ROWS * NBRICKS_PER_ROW;
-<<<<<<< Updated upstream
-	
-=======
 
 /**музика */
 	private static final String SND = "../sound/";
@@ -174,22 +117,10 @@ public class Breakout extends GraphicsProgram {
 	private GLabel countLabel;
 	private int score;
 
->>>>>>> Stashed changes
 /* Method: run() */
 /** Runs the Breakout program. */
 	public void run() {
 		this.setSize(APPLICATION_WIDTH, APPLICATION_HEIGHT);
-<<<<<<< Updated upstream
-		addMouseListeners();
-		addKeyListeners();
-		//maybe ask the user which difficulty (or level) they want
-		
-		setupGame();
-		runGame();
-		//ask if user wants to try again (or pick a level)
-		
-		
-=======
 		
 		addMouseListeners();
 		addKeyListeners();
@@ -212,16 +143,12 @@ public class Breakout extends GraphicsProgram {
 			}
 		}
 
->>>>>>> Stashed changes
 	}
 	
 	/**
 	 * initializes everything that is needed for the game
 	 */
 	private void setupGame(){
-<<<<<<< Updated upstream
-		setLives();
-=======
 		//Для рестарту гри потрібно збрасувати усі змінні
 		score = 0;
 		bricksLeft = BRICK_AMOUNT;
@@ -232,7 +159,6 @@ public class Breakout extends GraphicsProgram {
 		paddle = null;
 
 		addBackground();
->>>>>>> Stashed changes
 		placeBricks();
 		placePaddle();
 		placeBall();
@@ -244,10 +170,7 @@ public class Breakout extends GraphicsProgram {
 	 */
 	private void runGame(){
 		gameState = 2;
-<<<<<<< Updated upstream
-=======
 		counter();
->>>>>>> Stashed changes
 		while(!gameOver()){
 			if(!pause){
 				moveBall();
@@ -258,8 +181,6 @@ public class Breakout extends GraphicsProgram {
 	}
 	
 	/**
-<<<<<<< Updated upstream
-=======
 	 * adds a background
 	 */
 	private void addBackground(){
@@ -269,21 +190,11 @@ public class Breakout extends GraphicsProgram {
 	}
 	
 	/**
->>>>>>> Stashed changes
 	 * for gameState == 2, checks if there are no bricks and if user no lives
 	 * @return either true or false
 	 */
 	private boolean gameOver(){
 		if(bricksLeft == 0){
-<<<<<<< Updated upstream
-			//write a victory message here!!!!!!!
-			
-			return true;
-		}
-		if(ball == null){
-			//write a game over message here
-			
-=======
 			music.stop();
 			gameState = 3;
 			showWin();
@@ -295,26 +206,10 @@ public class Breakout extends GraphicsProgram {
 			gameState = 3;
 			showLose();
 
->>>>>>> Stashed changes
 			return true;
 		}
 		return false;
 	}
-<<<<<<< Updated upstream
-	
-	/**
-	 * sets lives
-	 * FINISH THIS METHOD!!!!!!!!!!!
-	 */
-	private void setLives(){
-		//maybe add different amount of lives depending on difficulty or level 
-		//(easy = NTURNS, normal = NTURNS - 1, hard = NTURNS - 2, min amount of lives is 0)
-		
-		lives = NTURNS;
-	}
-	
-=======
->>>>>>> Stashed changes
 	/**
 	 * places bricks using BrickColors.java (enum BrickColors) to choose the color of every 2 rows
 	 * uses constants BRICK_Y_OFFSET, NBRICK_ROWS, NBRICKS_PER_ROW and BRICK_HEIGHT (BRICK_WIDTH)
@@ -350,13 +245,8 @@ public class Breakout extends GraphicsProgram {
 	 * to make the middle align with mouse movement
 	 */
 	private void placePaddle(){
-<<<<<<< Updated upstream
-		double centerPaddleForMouseX =  -PADDLE_WIDTH / 2;
-		paddle = new GRect(centerPaddleForMouseX, PADDLE_Y, PADDLE_WIDTH, PADDLE_HEIGHT);
-=======
 		double centerPaddle = (WIDTH - PADDLE_WIDTH) / 2;
 		paddle = new GRect(centerPaddle, PADDLE_Y, PADDLE_WIDTH, PADDLE_HEIGHT);
->>>>>>> Stashed changes
 		paddle.setColor(Color.BLACK);
 		paddle.setFillColor(Color.BLACK);
 		paddle.setFilled(true);
@@ -379,11 +269,6 @@ public class Breakout extends GraphicsProgram {
 	 * makes the ball move at start
 	 */
 	private void initializeBallSpeed(){
-<<<<<<< Updated upstream
-		//maybe change starting speed depending on the difficulty
-		
-=======
->>>>>>> Stashed changes
 		vx = rgen.nextDouble(1.0, 3.0); 
 		if (rgen.nextBoolean(0.5)){
 			vx = -vx;
@@ -395,11 +280,7 @@ public class Breakout extends GraphicsProgram {
 	 * moves the ball while checking for collisions (with the ball)
 	 */
 	private void moveBall(){
-<<<<<<< Updated upstream
-		ball.move(vx, vy);
-=======
 		ball.move(vx * speed, vy * speed);
->>>>>>> Stashed changes
 		checkBallCollision();
 	}
 	
@@ -408,15 +289,10 @@ public class Breakout extends GraphicsProgram {
 	 */
 	private void checkBall(){
 		if(ball == null && lives > 0){
-<<<<<<< Updated upstream
-			placeBall();
-			lives--;
-=======
 			ballLoseSound.play();
 			placeBall();
 			lives--;
 			updateCount();
->>>>>>> Stashed changes
 		}
 	}
 	
@@ -441,16 +317,6 @@ public class Breakout extends GraphicsProgram {
 		}
 		//checks collision with objects
 		GObject collidedObject = getCollidedObject();
-<<<<<<< Updated upstream
-		if(collidedObject != null){
-			if(collidedObject == paddle){
-				vy = -Math.abs(vy);
-			}
-			else{ //removes brick
-				remove(collidedObject);
-				bricksLeft--;
-				vy = -vy;
-=======
 		if(collidedObject != null && collidedObject != counter && 
 				collidedObject != countLabel && collidedObject != background){
 			bounceSound.play();
@@ -464,7 +330,6 @@ public class Breakout extends GraphicsProgram {
 				bricksLeft--;
 				vy = -vy;
 				addScore(color);
->>>>>>> Stashed changes
 			}
 		}
 	}
@@ -474,23 +339,6 @@ public class Breakout extends GraphicsProgram {
 	 * @return either null (if no collision) or collided object
 	 */
 	private GObject getCollidedObject(){
-<<<<<<< Updated upstream
-		//upper left corner
-		if(getElementAt(ball.getX(), ball.getY()) != null){
-			return getElementAt(ball.getX(), ball.getY());
-		}
-		//upper right corner
-		else if(getElementAt(ball.getX() + BALL_DIAMETER, ball.getY()) != null){
-			return getElementAt(ball.getX() + BALL_DIAMETER, ball.getY());
-		}
-		//lower left corner
-		else if(getElementAt(ball.getX(), ball.getY() + BALL_DIAMETER) != null){
-			return getElementAt(ball.getX(), ball.getY() + BALL_DIAMETER);
-		}
-		//lower right corner
-		else if(getElementAt(ball.getX() + BALL_DIAMETER, ball.getY() + BALL_DIAMETER) != null){
-			return getElementAt(ball.getX() + BALL_DIAMETER, ball.getY() + BALL_DIAMETER);
-=======
 		GObject obj;
 		
 		//upper left corner
@@ -515,7 +363,6 @@ public class Breakout extends GraphicsProgram {
 		obj = getElementAt(ball.getX() + BALL_DIAMETER, ball.getY() + BALL_DIAMETER);
 		if(obj != null && obj != background){
 			return obj;
->>>>>>> Stashed changes
 		}
 		return null;
 	}
@@ -525,13 +372,7 @@ public class Breakout extends GraphicsProgram {
 	 */
 	public void mouseMoved(MouseEvent e){
 		if (paddle != null && e.getX() > HALF_PADDLE_WIDTH && e.getX() < WIDTH - HALF_PADDLE_WIDTH && !pause){
-<<<<<<< Updated upstream
-			double dx = e.getX() - last;
-			paddle.move(dx, 0);
-			last = e.getX();
-=======
 			paddle.setLocation(e.getX() - HALF_PADDLE_WIDTH, PADDLE_Y);
->>>>>>> Stashed changes
 		}
 	}
 
@@ -539,10 +380,6 @@ public class Breakout extends GraphicsProgram {
 	 * pauses the game when space is pressed (pause == true or pause == false)
 	 */
 	public void keyPressed(KeyEvent e) {
-<<<<<<< Updated upstream
-		//maybe remove the ability to pause on hardest difficulty
-=======
->>>>>>> Stashed changes
 		
 		if(gameState == 2){
 			if(e.getKeyCode() == KeyEvent.VK_SPACE){
@@ -555,8 +392,6 @@ public class Breakout extends GraphicsProgram {
 			}
 		}
 	}
-<<<<<<< Updated upstream
-=======
 
 	//робить кнопки
 	private void createButton(GRect button, GLabel label, Color color){
@@ -826,7 +661,6 @@ public class Breakout extends GraphicsProgram {
 		updateCount();
 	}
 
->>>>>>> Stashed changes
 	
 	//ball speed
 	private double vx; 
@@ -844,24 +678,12 @@ public class Breakout extends GraphicsProgram {
 	private int lives;
 	private int bricksLeft = BRICK_AMOUNT;
 	
-<<<<<<< Updated upstream
-	//placeholder, maybe add 3 difficulties: 1-easy, 2-normal, 3-hard
-	private int difficulty;
-	
-	//for mouseMoved method
-	private double last = 0;
-	
-=======
->>>>>>> Stashed changes
 	//objects
 	private GRect paddle;
 	private GOval ball;
 	
-<<<<<<< Updated upstream
-=======
 	private GImage background;
 	private GImage counter;
 	
->>>>>>> Stashed changes
 	private RandomGenerator rgen = RandomGenerator.getInstance();
 }
