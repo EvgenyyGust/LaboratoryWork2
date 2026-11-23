@@ -50,7 +50,6 @@ import java.io.File;
 //зробив коментарі англійською мовою, сподіваюсь це не проблема
 
 //TODO №2:
-//remove the ability to pause on hardest difficulty (keyPressed method)
 //ask the user which difficulty (or level) they want (run) //done
 //ask if user wants to try again (or pick a level) (run) //done
 //write a victory message (gameOver)//DONE
