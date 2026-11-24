@@ -66,6 +66,7 @@ public class Breakout extends GraphicsProgram {
  *  (amount of lives by default)*/
 	private static final int NTURNS = 3;
 	private int selectedLives = NTURNS - 1;
+	private int maxHealingBrickAmount = NTURNS - 1;
 	private int speed = 1;
 
 /** Constants that are not a part of the lab work */
@@ -82,7 +83,7 @@ public class Breakout extends GraphicsProgram {
 	AudioClip deathSound = MediaTools.loadAudioClip(SND + "death.wav");
 	AudioClip bounceSound = MediaTools.loadAudioClip(SND + "brick-hit.wav");
 	AudioClip ballLoseSound = MediaTools.loadAudioClip(SND + "ball-lost.wav");
-	AudioClip music = MediaTools.loadAudioClip(SND + "placeholder-music.wav");
+	AudioClip music = MediaTools.loadAudioClip(SND + "music.wav");
 
 /** меню */
 	//основні кнопки
@@ -158,7 +159,7 @@ public class Breakout extends GraphicsProgram {
 		ball = null;
 		paddle = null;
 
-		addBackground();
+		setBackground();
 		placeBricks();
 		placePaddle();
 		placeBall();
@@ -183,8 +184,7 @@ public class Breakout extends GraphicsProgram {
 	/**
 	 * adds a background
 	 */
-	private void addBackground(){
-		background = new GImage("background.jpg");
+	private void setBackground(){
 		background.setSize(APPLICATION_WIDTH, APPLICATION_HEIGHT);
 		add(background);
 	}
@@ -222,6 +222,10 @@ public class Breakout extends GraphicsProgram {
 		double brickStartX = (WIDTH - rowWidth) / 2.0;
 		
 		double brickY = BRICK_Y_OFFSET;
+		
+		int bricks = 0;
+		int healBricks = 0;
+		
 		for(int i = 0; i < NBRICK_ROWS; i++){
 			if(i > 0 && i % 2 == 0){
 				currentColor = currentColor.nextColor();
@@ -229,11 +233,21 @@ public class Breakout extends GraphicsProgram {
 			
 			double brickX = brickStartX;
 			for(int j = 0; j < NBRICKS_PER_ROW; j++){
-				GRect brick = new GRect(brickX, brickY, BRICK_WIDTH, BRICK_HEIGHT);
-				brick.setColor(currentColor.toColor());
-				brick.setFillColor(currentColor.toColor());
-				brick.setFilled(true);
-				add(brick);
+				int bricksRemaining = BRICK_AMOUNT - bricks;
+				int healBricksNeeded = maxHealingBrickAmount - healBricks;
+				if((rgen.nextBoolean(0.04) || bricksRemaining <= healBricksNeeded) && healBricks < maxHealingBrickAmount){
+					healBricks++;
+					healingBrick = new HealingBrick(brickX, brickY, BRICK_WIDTH, BRICK_HEIGHT, currentColor);
+					add(healingBrick);
+				}
+				else{
+					GRect brick = new GRect(brickX, brickY, BRICK_WIDTH, BRICK_HEIGHT);
+					brick.setColor(currentColor.toColor());
+					brick.setFillColor(currentColor.toColor());
+					brick.setFilled(true);
+					add(brick);
+				}
+				bricks++;
 				brickX += BRICK_WIDTH + BRICK_SEP;
 			}
 			brickY += BRICK_HEIGHT + BRICK_SEP;
@@ -325,6 +339,9 @@ public class Breakout extends GraphicsProgram {
 				ball.setLocation(ball.getX(), paddle.getY() - BALL_DIAMETER);
 			}
 			else{//removes brick
+				if(collidedObject.getColor().equals(Color.BLACK) && lives < selectedLives){
+					lives++;
+				}
 				Color color = collidedObject.getColor();
 				remove(collidedObject);
 				bricksLeft--;
@@ -474,18 +491,21 @@ public class Breakout extends GraphicsProgram {
 			else if(clicked == levelEasyButton || clicked == levelEasyLabel){
 				speed = 1;
 				selectedLives = NTURNS - 1;
+				maxHealingBrickAmount = NTURNS - 1;
 				removeAll();
 				showMenu();
 			}
 			else if(clicked == levelMediumButton || clicked == levelMediumLabel){
 				speed = 2;
 				selectedLives = NTURNS - 2;
+				maxHealingBrickAmount = NTURNS - 2;
 				removeAll();
 				showMenu();
 			}
 			else if(clicked == levelHardButton || clicked == levelHardLabel){
 				speed = 3;
 				selectedLives = NTURNS - 3;
+				maxHealingBrickAmount = NTURNS - 3;
 				removeAll();
 				showMenu();
 			}
@@ -504,6 +524,7 @@ public class Breakout extends GraphicsProgram {
 			else if(clicked == levelEasyButton || clicked == levelEasyLabel){
 				speed = 1;
 				selectedLives = NTURNS - 1;
+				maxHealingBrickAmount = NTURNS - 1;
 				removeAll();
 				showMenu();
 				gameState = 0;
@@ -511,6 +532,7 @@ public class Breakout extends GraphicsProgram {
 			else if(clicked == levelMediumButton || clicked == levelMediumLabel){
 				speed = 2;
 				selectedLives = NTURNS - 2;
+				maxHealingBrickAmount = NTURNS - 2;
 				removeAll();
 				showMenu();
 				gameState = 0;
@@ -518,6 +540,7 @@ public class Breakout extends GraphicsProgram {
 			else if(clicked == levelHardButton || clicked == levelHardLabel){
 				speed = 3;
 				selectedLives = NTURNS - 3;
+				maxHealingBrickAmount = NTURNS - 3;
 				removeAll();
 				showMenu();
 				gameState = 0;
@@ -625,7 +648,6 @@ public class Breakout extends GraphicsProgram {
 		countLabel = new GLabel("Score: " + score + ", Lives: " + lives);
 		countLabel.setFont("Monospaced-20");
 		
-		counter = new GImage("counter.jpg");
 		counter.setSize((countLabel.getWidth() + 10), 35);
 		counter.setLocation(20, 10);
 
@@ -658,6 +680,9 @@ public class Breakout extends GraphicsProgram {
 		else if(color.equals(Color.RED)){
 			score += 50;
 		}
+		else if(color.equals(Color.BLACK)){
+			score += 50;
+		}
 		updateCount();
 	}
 
@@ -680,10 +705,12 @@ public class Breakout extends GraphicsProgram {
 	
 	//objects
 	private GRect paddle;
+	private HealingBrick healingBrick;
 	private GOval ball;
 	
-	private GImage background;
-	private GImage counter;
+	private GImage background = new GImage("background.jpg");;
+	private GImage counter = new GImage("counter.jpg");
 	
 	private RandomGenerator rgen = RandomGenerator.getInstance();
 }
+
