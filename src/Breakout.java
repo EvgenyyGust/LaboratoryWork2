@@ -67,6 +67,7 @@ public class Breakout extends GraphicsProgram {
 	private static final int NTURNS = 3;
 	private int selectedLives = NTURNS - 1;
 	private int maxHealingBrickAmount = NTURNS - 1;
+	private int maxSpeedBrickAmount = 1; 
 	private int speed = 1;
 
 /** Constants that are not a part of the lab work */
@@ -225,6 +226,7 @@ public class Breakout extends GraphicsProgram {
 		
 		int bricks = 0;
 		int healBricks = 0;
+		int speedBricks = 0;
 		
 		for(int i = 0; i < NBRICK_ROWS; i++){
 			if(i > 0 && i % 2 == 0){
@@ -235,10 +237,17 @@ public class Breakout extends GraphicsProgram {
 			for(int j = 0; j < NBRICKS_PER_ROW; j++){
 				int bricksRemaining = BRICK_AMOUNT - bricks;
 				int healBricksNeeded = maxHealingBrickAmount - healBricks;
-				if((rgen.nextBoolean(0.04) || bricksRemaining <= healBricksNeeded) && healBricks < maxHealingBrickAmount){
+				int speedBricksNeeded = maxSpeedBrickAmount - speedBricks;
+				
+				if((rgen.nextBoolean(0.05) || bricksRemaining <= healBricksNeeded) && healBricks < maxHealingBrickAmount){
 					healBricks++;
 					healingBrick = new HealingBrick(brickX, brickY, BRICK_WIDTH, BRICK_HEIGHT, currentColor);
 					add(healingBrick);
+				}
+				else if((rgen.nextBoolean(0.035) || (bricksRemaining - healBricksNeeded) <= speedBricksNeeded) && speedBricks < maxSpeedBrickAmount){
+					speedBricks++;
+					speedBrick = new SpeedBrick(brickX, brickY, BRICK_WIDTH, BRICK_HEIGHT, currentColor);
+					add(speedBrick);
 				}
 				else{
 					GRect brick = new GRect(brickX, brickY, BRICK_WIDTH, BRICK_HEIGHT);
@@ -341,6 +350,10 @@ public class Breakout extends GraphicsProgram {
 			else{//removes brick
 				if(collidedObject.getColor().equals(Color.BLACK) && lives < selectedLives){
 					lives++;
+				}
+				if(collidedObject.getColor().equals(Color.DARK_GRAY)){
+					vx *= 1.15;
+					vy *= 1.15;
 				}
 				Color color = collidedObject.getColor();
 				remove(collidedObject);
@@ -512,6 +525,7 @@ public class Breakout extends GraphicsProgram {
 				speed = 1;
 				selectedLives = NTURNS - 1;
 				maxHealingBrickAmount = NTURNS - 1;
+				maxSpeedBrickAmount = 1;
 				removeAll();
 				showMenu();
 			}
@@ -519,6 +533,7 @@ public class Breakout extends GraphicsProgram {
 				speed = 2;
 				selectedLives = NTURNS - 2;
 				maxHealingBrickAmount = NTURNS - 2;
+				maxSpeedBrickAmount = 2;
 				removeAll();
 				showMenu();
 			}
@@ -526,6 +541,7 @@ public class Breakout extends GraphicsProgram {
 				speed = 3;
 				selectedLives = NTURNS - 3;
 				maxHealingBrickAmount = NTURNS - 3;
+				maxSpeedBrickAmount = 3;
 				removeAll();
 				showMenu();
 			}
@@ -545,6 +561,7 @@ public class Breakout extends GraphicsProgram {
 				speed = 1;
 				selectedLives = NTURNS - 1;
 				maxHealingBrickAmount = NTURNS - 1;
+				maxSpeedBrickAmount = 1;
 				removeAll();
 				showMenu();
 				gameState = 0;
@@ -553,6 +570,7 @@ public class Breakout extends GraphicsProgram {
 				speed = 2;
 				selectedLives = NTURNS - 2;
 				maxHealingBrickAmount = NTURNS - 2;
+				maxSpeedBrickAmount = 2;
 				removeAll();
 				showMenu();
 				gameState = 0;
@@ -561,6 +579,7 @@ public class Breakout extends GraphicsProgram {
 				speed = 3;
 				selectedLives = NTURNS - 3;
 				maxHealingBrickAmount = NTURNS - 3;
+				maxSpeedBrickAmount = 3;
 				removeAll();
 				showMenu();
 				gameState = 0;
@@ -584,6 +603,9 @@ public class Breakout extends GraphicsProgram {
 		gameState = 2;
 	}
 
+	/**
+	 * toggles the music
+	 */
 	private void toggleMusic(){
 		musicON = !musicON;
 		updateSettingsText();
@@ -712,10 +734,9 @@ public class Breakout extends GraphicsProgram {
 		else if(color.equals(Color.ORANGE)){
 			score += 40;
 		}
-		else if(color.equals(Color.RED)){
-			score += 50;
-		}
-		else if(color.equals(Color.BLACK)){
+		else if(color.equals(Color.RED) || 
+				color.equals(Color.BLACK) || 
+				color.equals(Color.DARK_GRAY)){
 			score += 50;
 		}
 		updateCount();
@@ -741,6 +762,7 @@ public class Breakout extends GraphicsProgram {
 	//objects
 	private GRect paddle;
 	private HealingBrick healingBrick;
+	private SpeedBrick speedBrick;
 	private GOval ball;
 	
 	private GImage background = new GImage("background.jpg");;
