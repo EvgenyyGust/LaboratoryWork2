@@ -5,7 +5,14 @@ import acm.program.*;
 import acm.util.*;
 
 public class HealingBrick extends GCompound {
-	 
+	 /**
+	  * Places a brick with a "plus" sign
+	  * @param x
+	  * @param y
+	  * @param width
+	  * @param height
+	  * @param currentColor
+	  */
     public HealingBrick(double x, double y, int width, int height, BrickColors currentColor) {
     	GRect healingBrick = new GRect(x, y, width, height);
     	healingBrick.setFilled(true);

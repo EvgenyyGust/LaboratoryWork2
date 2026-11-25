@@ -9,6 +9,10 @@ import java.awt.Color;
 
 public enum BrickColors {
 	RED, ORANGE, YELLOW, GREEN, CYAN;
+	/**
+	 * Accepts a string and returns a Color
+	 * @return Color
+	 */
 	public Color toColor(){
 		switch(this){
 		case RED: return Color.RED;
@@ -19,6 +23,10 @@ public enum BrickColors {
 		default: return Color.RED;
 		}
 	}
+	/**
+	 * Accepts a color and returns a color that is after it
+	 * @return color string
+	 */
 	public BrickColors nextColor(){
 		switch(this){
 		case RED: return ORANGE;

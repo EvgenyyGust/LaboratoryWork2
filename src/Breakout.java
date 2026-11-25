@@ -410,7 +410,12 @@ public class Breakout extends GraphicsProgram {
 		}
 	}
 
-	//робить кнопки
+	/**
+	 * робить кнопки
+	 * @param button
+	 * @param label
+	 * @param color
+	 */
 	private void createButton(GRect button, GLabel label, Color color){
 		button.setColor(color);
 		button.setFilled(true);
@@ -422,20 +427,31 @@ public class Breakout extends GraphicsProgram {
 		centerLabelInRect(label, button);
 	}
 
-	//центрує текст
+	/**
+	 * центрує текст в Rect
+	 * @param label
+	 * @param button
+	 */
 	private void centerLabelInRect(GLabel label, GRect button){
 		double x = button.getX() + (button.getWidth() - label.getWidth()) / 2;
 		double y = button.getY() + (button.getHeight() + label.getAscent()) / 2;
 		label.setLocation(x, y);
 	}
 	
+	/**
+	 * центрує текст в Image
+	 * @param label
+	 * @param image
+	 */
 	private void centerLabelInImage(GLabel label, GImage image){
 		double x = image.getX() + (image.getWidth() - label.getWidth()) / 2;
 		double y = image.getY() + (image.getHeight() + label.getAscent()) / 2;
 		label.setLocation(x, y);
 	}
 	
-	//змінює стан кнопок
+	/**
+	 * змінює стан кнопок
+	 */
 	private void updateSettingsText(){
 		if(musicON){
 			musicLabel.setLabel("MUSIC: ON");
@@ -446,7 +462,9 @@ public class Breakout extends GraphicsProgram {
 		centerLabelInRect(musicLabel, musicButton);
 	}
 
-	//робить та показує меню початку
+	/**
+	 * робить та показує меню початку
+	 */
 	private void showMenu(){
 		removeAll();
 		setBackground(Color.BLACK);
@@ -471,7 +489,9 @@ public class Breakout extends GraphicsProgram {
 		createButton(levelButton, levelLabel, Color.ORANGE);
 	}
 	
-	//слідкує за мишею і кліком кнопок
+	/**
+	 * слідкує за мишею і кліком кнопок
+	 */
 	public void mouseClicked(MouseEvent e){
 		GObject clicked = getElementAt(e.getX(), e.getY());
 		if(clicked == null){
@@ -486,7 +506,7 @@ public class Breakout extends GraphicsProgram {
 				toggleMusic();
 			}
 			else if(clicked == levelButton || clicked == levelLabel){
-				levelChoise();
+				levelChoice();
 			}
 			else if(clicked == levelEasyButton || clicked == levelEasyLabel){
 				speed = 1;
@@ -519,7 +539,7 @@ public class Breakout extends GraphicsProgram {
 				toggleMusic();
 			}
 			else if(clicked == levelButton || clicked == levelLabel){
-				levelChoise();
+				levelChoice();
 			}
 			else if(clicked == levelEasyButton || clicked == levelEasyLabel){
 				speed = 1;
@@ -548,7 +568,9 @@ public class Breakout extends GraphicsProgram {
 		}
 	}
 	
-	//підготовлює середовище до і після меню
+	/**
+	 * підготовлює середовище до і після меню
+	 */
 	private void startGame(){
 		if(gameState != 0 && gameState != 3){
 			return;
@@ -567,8 +589,10 @@ public class Breakout extends GraphicsProgram {
 		updateSettingsText();
 	}
 	
-	//кнопка вибору рівня
-	private void levelChoise(){
+	/**
+	 * кнопка вибору рівня
+	 */
+	private void levelChoice(){
 		removeAll();
 		levelEasyButton = new GRect((WIDTH - 300) / 2, 150, 300, 80);
 		levelEasyLabel = new GLabel("EASY");
@@ -583,7 +607,9 @@ public class Breakout extends GraphicsProgram {
 		createButton(levelHardButton, levelHardLabel, Color.RED);
 	}
 	
-	//меню програшу
+	/**
+	 * меню програшу
+	 */
 	private void showLose(){
 		removeAll();
 
@@ -613,7 +639,9 @@ public class Breakout extends GraphicsProgram {
 		createButton(levelButton, levelLabel, Color.ORANGE);
 	}
 	
-	//меню перемоги
+	/**
+	 * меню перемоги
+	 */
 	private void showWin(){
 		removeAll();
 
@@ -643,7 +671,9 @@ public class Breakout extends GraphicsProgram {
 		createButton(levelButton, levelLabel, Color.ORANGE);
 	}
 
-	//кількість балів
+	/**
+	 * кількість балів
+	 */
 	private void counter(){
 		countLabel = new GLabel("Score: " + score + ", Lives: " + lives);
 		countLabel.setFont("Monospaced-20");
@@ -656,14 +686,19 @@ public class Breakout extends GraphicsProgram {
 		centerLabelInImage(countLabel, counter);
 	}
 
-	//оновлює значення балів (and lives)
+	/**
+	 * оновлює значення балів (and lives)
+	 */
 	private void updateCount(){
 		countLabel.setLabel("Score: " + score + ", Lives: " + lives);
 		counter.setSize((countLabel.getWidth() + 10), 35);
 		centerLabelInImage(countLabel, counter);
 	}
 	
-	//перевіряє який колір у цеглини та дає бали за нього
+	/**
+	 * перевіряє який колір у цеглини та дає бали за нього
+	 * @param color
+	 */
 	private void addScore(Color color){
 		if(color.equals(Color.CYAN)){
 			score += 10;
