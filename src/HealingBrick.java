@@ -1,3 +1,10 @@
+/*
+ * File: HealingBrick.java
+ * -------------------
+ * 
+ * This file is for creating healingBricks in Breakout.java file
+ */
+
 import java.awt.Color;
 
 import acm.graphics.*;
